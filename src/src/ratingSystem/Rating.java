@@ -1,16 +1,18 @@
 package ratingSystem;
+
+import book.Book;
 import java.util.ArrayList;
 import java.util.List;
 
 // Класс для представления общего рейтинга книги
 class Rating implements RatingComponent {
-    private String bookTitle;              // Название книги
-    private double averageRating;          // Средний рейтинг книги
+    private Book book; // Связь с книгой
+    private double averageRating; // Средний рейтинг книги
     private List<RatingComponent> children = new ArrayList<>(); // Список дочерних элементов (отзывов)
 
     // Конструктор, инициализирующий рейтинг книги
-    public Rating(String bookTitle, double averageRating) {
-        this.bookTitle = bookTitle;
+    public Rating(Book book, double averageRating) {
+        this.book = book;
         this.averageRating = averageRating;
     }
 
@@ -27,6 +29,13 @@ class Rating implements RatingComponent {
     // Метод для отображения информации о рейтинге и его дочерних элементах
     @Override
     public void display() {
-        // Реализация отображения рейтинга и дочерних компонентов
+        System.out.println("Рейтинг книги: " + book.getTitle() + " - " + averageRating);
+        for (RatingComponent component : children) {
+            component.display();
+        }
+    }
+
+    public Book getBook() {
+        return book;
     }
 }

@@ -10,8 +10,6 @@ class TerminalPaymentAdapter implements PaymentProcessor {
 
     @Override
     public void processPayment(double amount) {
-        // Адаптер вызывает существующий метод из TerminalPaymentService
         terminalPaymentService.payAtTerminal(amount);
     }
 }
-

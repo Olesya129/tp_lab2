@@ -4,4 +4,3 @@ package ratingSystem;
 interface RatingComponent {
     void display(); // Метод для отображения информации о компоненте
 }
-

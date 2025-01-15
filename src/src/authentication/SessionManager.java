@@ -1,6 +1,6 @@
 package authentication;
 
-public class SessionManager {
+class SessionManager {
     public void createSession(String username) {
         System.out.println("Создание сессии для пользователя: " + username);
         // Логика создания сессии

@@ -1,4 +1,4 @@
-package memento;
+package actionHistory;
 
 // Originator: управляет состоянием и создает Memento
 public class ConstraintSolver {

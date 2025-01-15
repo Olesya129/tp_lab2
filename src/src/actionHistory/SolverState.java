@@ -1,4 +1,4 @@
-package memento;
+package actionHistory;
 
 // Memento: сохраняет состояние
 public class SolverState {

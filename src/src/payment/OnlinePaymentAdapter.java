@@ -1,6 +1,5 @@
 package payment;
 
-// Adapter (Адаптеры)
 // Адаптер для интеграции OnlinePaymentService с интерфейсом PaymentProcessor
 class OnlinePaymentAdapter implements PaymentProcessor {
     private OnlinePaymentService onlinePaymentService;
@@ -11,8 +10,6 @@ class OnlinePaymentAdapter implements PaymentProcessor {
 
     @Override
     public void processPayment(double amount) {
-        // Адаптер вызывает существующий метод из OnlinePaymentService
         onlinePaymentService.payOnline(amount);
     }
 }
-
