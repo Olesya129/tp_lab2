@@ -1,4 +1,5 @@
 package catalog;
+
 import book.Book;
 
 public class NameAuthorCriteria implements SearchCriteria {
@@ -12,10 +13,4 @@ public class NameAuthorCriteria implements SearchCriteria {
     public boolean match(Book book) {
         return book.getAuthor().equalsIgnoreCase(author);
     }
-
-    @Override
-    public SearchCriteria createCriteria(String value) {
-        return new NameAuthorCriteria(value);
-    }
 }
-

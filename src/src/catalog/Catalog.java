@@ -1,8 +1,8 @@
 package catalog;
+
 import book.Book;
 import java.util.ArrayList;
 import java.util.List;
-
 
 public class Catalog {
 
@@ -24,4 +24,3 @@ public class Catalog {
         return result;
     }
 }
-

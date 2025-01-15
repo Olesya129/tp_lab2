@@ -1,4 +1,5 @@
 package catalog;
+
 import book.Book;
 
 public class NameBookCriteria implements SearchCriteria {
@@ -12,10 +13,4 @@ public class NameBookCriteria implements SearchCriteria {
     public boolean match(Book book) {
         return book.getTitle().equalsIgnoreCase(title);
     }
-
-    @Override
-    public SearchCriteria createCriteria(String value) {
-        return new NameBookCriteria(value);
-    }
 }
-
