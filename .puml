@@ -5,18 +5,33 @@ class Library {
     - List<Book> books
     - List<User> users
     - List<Loan> loans
-    - List<Observer> observers
     --
-    - Library()
     + static getInstance(): Library
-    + addBook(Book book): void
-    + addUser(User user): void
-    + loanBook(BookCopy bookCopy, User user): void
-    + returnBook(BookCopy bookCopy): void
-    + addObserver(Observer observer): void
-    + removeObserver(Observer observer): void
-    + notifyObservers(String message): void
+    + addBook(Book book)
+    + addUser(User user)
+    + loanBook(BookCopy bookCopy, User user)
+    + returnBook(BookCopy bookCopy)
 }
+
+' Паттерн Декоратор (Decorator)
+abstract class EBookDecorator {
+    # EBook ebook
+    --
+    + EBookDecorator(EBook ebook)
+    + getData(): String
+}
+
+class LastPageDecorator {
+    - int lastReadPage
+    --
+    + LastPageDecorator(EBook ebook)
+    + setLastReadPage(int page): void
+    + getLastReadPage(): int
+    + getData(): String
+}
+
+EBookDecorator <|-- LastPageDecorator : "Паттерн Decorator"
+EBookDecorator "1" --> "1" EBook
 
 class Book {
     - String title
@@ -28,7 +43,15 @@ class Book {
     + getData(): String
 }
 
-class EBook extends Book {
+class PrintedBook {
+    - String shelfLocation
+    --
+    + PrintedBook(String title, String author, String shelfLocation)
+    + getShelfLocation(): String
+    + getData(): String
+}
+
+class EBook {
     - double fileSize
     - String format
     --
@@ -38,24 +61,7 @@ class EBook extends Book {
     + getData(): String
 }
 
-' Паттерн Декоратор (Decorator)
-class EBookDecorator {
-    # EBook ebook
-    --
-    + EBookDecorator(EBook ebook)
-    + getData(): String
-}
-
-class LastPageDecorator extends EBookDecorator {
-    - int lastReadPage
-    --
-    + LastPageDecorator(EBook ebook)
-    + setLastReadPage(int page): void
-    + getLastReadPage(): int
-    + getData(): String
-}
-
-class Magazine extends Book {
+class Magazine {
     - String issue
     - String publicationDate
     --
@@ -65,18 +71,369 @@ class Magazine extends Book {
     + getData(): String
 }
 
-class PrintedBook extends Book {
-    - String shelfLocation
+Book <|-- PrintedBook
+Book <|-- EBook
+Book <|-- Magazine
+
+' Паттерн Прототип (Prototype)
+class BookCopy {
+    - final String id
+    - final Book book
     --
-    + PrintedBook(String title, String author, String shelfLocation)
-    + getShelfLocation(): String
-    + getData(): String
+    + BookCopy(Book book)
+    + getId(): String
+    + getBook(): Book
+    + clone(): BookCopy
 }
 
-Library "1" *-- "0..*" Book : "manages"
-Book <|-- EBook
-EBookDecorator *-- EBook
-LastPageDecorator <|-- EBookDecorator
-Book <|-- Magazine
-Book <|-- PrintedBook
+interface Prototype {
+    + clone(): Prototype
+}
+
+BookCopy ..|> Prototype
+BookCopy --|> Book
+
+' Паттерн Состояние (State)
+class Loan {
+    - BookCopy bookCopy
+    - User user
+    - LocalDate issueDate
+    - LocalDate dueDate
+    - State currentState
+    --
+    + Loan(BookCopy bookCopy, User user, LocalDate issueDate, LocalDate dueDate)
+    + setState(State state): void
+    + process(): void
+    + getBookCopy(): BookCopy
+    + getUser(): User
+    + getDueDate(): LocalDate
+}
+
+interface State {
+    + handle(Loan loan): void
+}
+
+class IssuedState {
+    + handle(Loan loan): void
+}
+
+class OverdueState {
+    + handle(Loan loan): void
+}
+
+class ReturnedState {
+    + handle(Loan loan): void
+}
+
+Loan "1" --> "1" State : "Паттерн State"
+State <|.. IssuedState
+State <|.. OverdueState
+State <|.. ReturnedState
+
+' Паттерн Фабричный метод (Factory Method)
+class Catalog {
+    - Catalog catalog
+    --
+    + Catalog(List<Book> books)
+    + search(SearchCriteria criteria): List<Book>
+}
+
+interface SearchCriteria {
+    + match(Book book): boolean
+}
+
+class NameAuthorCriteria {
+    - String author
+    --
+    + NameAuthorCriteria(String author)
+    + match(Book book): boolean
+}
+
+class NameBookCriteria {
+    - String title
+    --
+    + NameBookCriteria(String title)
+    + match(Book book): boolean
+}
+
+class SearchCriteriaFactory {
+    + static createCriteria(String type, String value): SearchCriteria
+}
+interface Storage {
+    + saveBook(Book book): void
+    + loadBooks(): List<Book>
+}
+
+class FileStorage {
+    - List<Book> books
+    --
+    + saveBook(Book book): void
+    + loadBooks(): List<Book>
+}
+
+class DatabaseStorage {
+    - List<Book> books
+    --
+    + saveBook(Book book): void
+    + loadBooks(): List<Book>
+}
+
+Catalog "1" --> "1" Storage : "uses"
+Book --> Storage : "Паттерн Bridge "
+Storage <|.. DatabaseStorage
+Storage <|.. FileStorage
+
+Catalog "1" --> SearchCriteria : "uses"
+SearchCriteria <|.. NameAuthorCriteria
+SearchCriteria <|.. NameBookCriteria
+SearchCriteriaFactory --> SearchCriteria : "Паттерн Factory Method"
+
+
+' Пользовательская иерархия
+abstract class User {
+    - name: String
+    --
+    + getName(): String
+    + getNumberBooks(): int
+    + getAmountTime(): int
+    + printUserPermissions(): void
+    + update(String message): void
+}
+
+class Librarian {
+    + getNumberBooks(): int
+    + getAmountTime(): int
+}
+
+class Professor {
+    + getNumberBooks(): int
+    + getAmountTime(): int
+}
+
+class Student {
+    + getNumberBooks(): int
+    + getAmountTime(): int
+}
+
+User <|-- Librarian
+User <|-- Professor
+User <|-- Student
+
+' Ассоциации между классами
+Library "1" --> "0..*" Book
+Library "1" --> "0..*" BookCopy
+Library "1" --> "0..*" User
+Library "1" --> "0..*" Loan
+Library "1" --> "0..*" Notification
+Observer <|.. User : "Паттерн Observer"
+
+' Паттерн Наблюдатель (Observer)
+class Notification {
+    - String message
+    - List<Observer> observers
+    --
+    + Notification(String message)
+    + getMessage(): String
+    + send(User user)
+    + addObserver(Observer observer)
+    + removeObserver(Observer observer)
+    + notifyObservers(String message)
+}
+
+interface Observer {
+    + update(String message): void
+}
+
+interface Subject {
+    + addObserver(Observer observer): void
+    + removeObserver(Observer observer): void
+    + notifyObservers(String message): void
+}
+
+Notification "1" ..|> "1" Subject
+
+
+' Паттерн Стратегия (Strategy)
+class Report {
+    - ReportStrategy reportStrategy
+    --
+    + setReportStrategy(ReportStrategy reportStrategy): void
+    + generateReport(List<Book> books): void
+}
+
+interface ReportStrategy {
+    + generateReport(List<Book> books): void
+}
+
+class DateReportStrategy {
+    + generateReport(List<Book> books): void
+}
+
+class PopularityReportStrategy {
+    + generateReport(List<Book> books): void
+}
+
+Report "1" --> ReportStrategy : "Паттерн Strategy"
+Report "1" --> "0..*" Book
+ReportStrategy <|.. DateReportStrategy
+ReportStrategy <|.. PopularityReportStrategy
+
+' Новые классы
+class AccountModule {
+    + getUserData(): void
+    + performAction(String action): void
+}
+
+class RealAccountModule {
+    - String userData
+    --
+    + RealAccountModule(String userData)
+    + getUserData(): void
+    + performAction(String action): void
+}
+
+class ProxyAccountModule {
+    - RealAccountModule realAccountModule
+    - String userData
+    --
+    + ProxyAccountModule(String userData)
+    + getUserData(): void
+    + performAction(String action): void
+}
+
+AccountModule <|-- RealAccountModule
+AccountModule <|-- ProxyAccountModule : "Паттерн Proxy"
+ProxyAccountModule "1" --> "1" RealAccountModule
+
+' Связи с другими компонентами
+RealAccountModule "1" --> "0..*" User
+ProxyAccountModule "1" --> "1" Library
+
+' Классы истории действий
+class ActionHistory {
+    - final Stack<SolverState> history
+    - final User user
+    --
+    + ActionHistory(User user)
+    + save(SolverState state): void
+    + undo(): SolverState
+}
+
+
+class ConstraintSolver {
+    - String currentState
+    --
+    + setState(String state): void
+    + saveState(): SolverState
+    + restoreState(SolverState memento): void
+}
+
+class SolverState {
+    - final String state
+    --
+    + SolverState(String state)
+    + getState(): String
+}
+
+ActionHistory "1" --> "1" User
+ActionHistory "1" --> "0..*" SolverState : "Паттерн Memento"
+SolverState <|-- ConstraintSolver
+
+' Аутентификация и Сессии
+class AuthenticationFacade {
+    - AuthenticationService authService
+    - SessionManager sessionManager
+    --
+    + AuthenticationFacade()
+    + login(User user, String password): boolean
+    + logout(User user): void
+}
+
+class AuthenticationService {
+    + authenticate(String username, String password): boolean
+}
+
+class SessionManager {
+    + createSession(String username): void
+    + destroySession(String username): void
+}
+
+AuthenticationFacade "1" --> "1" AuthenticationService : "Паттерн Facade"
+AuthenticationFacade "1" --> "1" SessionManager : "uses"
+AuthenticationService "1" --> "0..*" User
+SessionManager "1" --> "0..*" User
+
+' Связь с другими классами
+AuthenticationFacade "1" --> "0..*" User
+' Классы и отношения платежей
+class PaymentAdapter {
+    - Object paymentService
+    - User user
+    + Payment(paymentService: Object, user: User)
+    + processPenaltyPayment(): void
+}
+
+interface PaymentProcessor {
+    + processPayment(double amount): void
+}
+
+class OnlinePaymentService {
+    --
+    + payOnline(double amount): void
+}
+
+class TerminalPaymentService {
+    --
+    + payAtTerminal(double amount): void
+}
+
+PaymentProcessor <|.. PaymentAdapter : "Паттерн Adapter"
+PaymentAdapter "1" --> "1" OnlinePaymentService : "uses"
+PaymentAdapter "1" --> "1" TerminalPaymentService : "uses"
+
+' Связи с другими компонентами
+User "1" --> "0..*" PaymentAdapter
+
+' Абстрактный класс для компонентов рейтинга
+abstract class RatingComponent {
+    +add(RatingComponent) : void
+    +remove(RatingComponent) : void
+    +getDetails() : String
+}
+class Rating {
+    - book: Book
+    - ratings: List<Integer>
+    - reviews: List<Review>
+    + Rating(book: Book, rating: int)
+    + addRating(rating: int): void
+    + addReview(review: Review): void
+    + getBook(): Book
+    + getAverageRating(): double
+    + display(): void
+}
+
+class Review {
+    - user: User
+    - comment: String
+    + Review(user: User, comment: String)
+    + display(): void
+}
+
+class RatingSystem {
+    - ratings: List<Rating>
+    + RatingSystem()
+    + addRating(book: Book, rating: int): void
+    + addReview(book: Book, user: User, reviewText: String): void
+    + findRating(book: Book): Rating
+    + displayAllRatings(): void
+}
+
+' Отношения
+Rating --|> RatingComponent
+Review --|> RatingComponent
+RatingSystem --> Rating
+Rating --> Review
+Book --> Rating
+User --> Review
+
 @enduml

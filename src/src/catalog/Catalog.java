@@ -1,26 +1,25 @@
 package catalog;
 
 import book.Book;
-import java.util.ArrayList;
+import catalog.storage.Storage;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Catalog {
+    private Storage storage;
 
-    private List<Book> books;
-
-    // Конструктор принимает список книг
-    public Catalog(List<Book> books) {
-        this.books = books;
+    public Catalog(Storage storage) {
+        this.storage = storage;
     }
 
-    // Метод поиска по заданному критерию
+    public void addBook(Book book) {
+        storage.saveBook(book);
+    }
+
     public List<Book> search(SearchCriteria criteria) {
-        List<Book> result = new ArrayList<>();
-        for (Book book : books) {
-            if (criteria.match(book)) {
-                result.add(book);
-            }
-        }
-        return result;
+        List<Book> books = storage.loadBooks();
+        return books.stream()
+                .filter(criteria::match)
+                .collect(Collectors.toList());
     }
 }

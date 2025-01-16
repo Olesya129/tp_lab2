@@ -1,7 +1,5 @@
 package library;
 import notification.Notification;
-import notification.Observer;
-import notification.Subject;
 import book.Book;
 import bookCopy.BookCopy;
 import user.User;
@@ -10,18 +8,16 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Library implements Subject {
+public class Library {
     private static Library instance;
     private List<Book> books;
     private List<User> users;
     private List<Loan> loans;
-    private List<Observer> observers;
 
     private Library() {
         books = new ArrayList<>();
         users = new ArrayList<>();
         loans = new ArrayList<>();
-        observers = new ArrayList<>();
     }
 
     // Метод для получения единственного экземпляра библиотеки
@@ -40,7 +36,6 @@ public class Library implements Subject {
     // Метод добавления пользователя в библиотеку
     public void addUser(User user) {
         users.add(user);
-        addObserver(user);  // Добавляем пользователя как наблюдателя
     }
 
     // Метод для выдачи книги пользователю
@@ -61,7 +56,7 @@ public class Library implements Subject {
         System.out.println("Книга успешно выдана пользователю.");
 
         Notification notification = new Notification("Книга выдана: " + bookCopy.getBook().getTitle());
-        notifyObservers(notification.getMessage());
+        notification.send(user);
     }
 
     // Метод для возврата книги
@@ -70,24 +65,13 @@ public class Library implements Subject {
         System.out.println("Книга возвращена.");
 
         Notification notification = new Notification("Книга возвращена: " + bookCopy.getBook().getTitle());
-        notifyObservers(notification.getMessage());
-    }
+        // Получаем пользователя из списка займов для уведомления
+        Loan loan = loans.stream()
+                .filter(l -> l.getBookCopy().equals(bookCopy))
+                .findFirst().orElse(null);
 
-    // Реализация методов интерфейса Subject
-    @Override
-    public void addObserver(Observer observer) {
-        observers.add(observer);
-    }
-
-    @Override
-    public void removeObserver(Observer observer) {
-        observers.remove(observer);
-    }
-
-    @Override
-    public void notifyObservers(String message) {
-        for (Observer observer : observers) {
-            observer.update(message);
+        if (loan != null) {
+            notification.send(loan.getUser());
         }
     }
 }

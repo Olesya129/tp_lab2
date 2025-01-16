@@ -1,8 +1,6 @@
 package actionHistory;
 
-import loan.Loan;
 import user.User;
-
 
 import java.util.Stack;
 

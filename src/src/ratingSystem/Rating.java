@@ -5,37 +5,49 @@ import java.util.ArrayList;
 import java.util.List;
 
 // Класс для представления общего рейтинга книги
-class Rating implements RatingComponent {
-    private Book book; // Связь с книгой
-    private double averageRating; // Средний рейтинг книги
-    private List<RatingComponent> children = new ArrayList<>(); // Список дочерних элементов (отзывов)
+class Rating {
+    private Book book;  // Связь с книгой
+    private List<Integer> ratings;  // Список всех рейтингов
+    private List<Review> reviews;  // Список отзывов
 
-    // Конструктор, инициализирующий рейтинг книги
-    public Rating(Book book, double averageRating) {
+    public Rating(Book book, int rating) {
         this.book = book;
-        this.averageRating = averageRating;
+        this.ratings = new ArrayList<>();
+        this.reviews = new ArrayList<>();
+        addRating(rating);  // Инициализируем рейтинг
     }
 
-    // Метод для добавления дочернего элемента (например, отзыва)
-    public void add(RatingComponent component) {
-        children.add(component);
+    // Метод для добавления нового рейтинга
+    public void addRating(int rating) {
+        ratings.add(rating);
     }
 
-    // Метод для удаления дочернего элемента
-    public void remove(RatingComponent component) {
-        children.remove(component);
-    }
-
-    // Метод для отображения информации о рейтинге и его дочерних элементах
-    @Override
-    public void display() {
-        System.out.println("Рейтинг книги: " + book.getTitle() + " - " + averageRating);
-        for (RatingComponent component : children) {
-            component.display();
-        }
+    // Метод для добавления нового отзыва
+    public void addReview(Review review) {
+        reviews.add(review);
     }
 
     public Book getBook() {
         return book;
+    }
+
+    // Метод для вычисления среднего рейтинга
+    public double getAverageRating() {
+        if (ratings.isEmpty()) {
+            return 0;
+        }
+        int sum = 0;
+        for (int rating : ratings) {
+            sum += rating;
+        }
+        return sum / (double) ratings.size();
+    }
+
+    // Метод для отображения информации о рейтинге и отзывах
+    public void display() {
+        System.out.println("Рейтинг книги: " + book.getTitle() + " - Средний рейтинг: " + getAverageRating());
+        for (Review review : reviews) {
+            review.display();
+        }
     }
 }

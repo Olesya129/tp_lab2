@@ -2,31 +2,34 @@ package ratingSystem;
 
 import book.Book;
 import user.User;
-
 import java.util.ArrayList;
 import java.util.List;
 
 // Класс для системы рейтингов, которая позволяет пользователям оценивать книги и оставлять отзывы
 public class RatingSystem {
-    private List<Rating> ratings;
+    private List<Rating> ratings; // Список всех рейтингов
 
     public RatingSystem() {
         ratings = new ArrayList<>();
     }
 
     // Метод для добавления рейтинга для книги
-    public void addRating(Book book, double averageRating) {
-        Rating rating = new Rating(book, averageRating);
-        ratings.add(rating);
+    public void addRating(Book book, int rating) {
+        Rating ratingObj = findRating(book);
+        if (ratingObj == null) {
+            ratingObj = new Rating(book, rating);
+            ratings.add(ratingObj);
+        } else {
+            ratingObj.addRating(rating);  // Добавляем новый рейтинг для книги
+        }
     }
 
     // Метод для добавления отзыва к книге
-    public void addReview(Book book, User user, String comment) {
+    public void addReview(Book book, User user, String reviewText) {
         Rating rating = findRating(book);
         if (rating != null) {
-            Review review = new Review(user, comment);  // Передаем объект User напрямую
-            rating.add(review);
-            System.out.println("Отзыв пользователя " + user + " для книги " + book.getTitle() + " добавлен.");
+            Review review = new Review(user, reviewText);
+            rating.addReview(review);  // Добавляем отзыв к рейтингу книги
         }
     }
 
@@ -37,7 +40,7 @@ public class RatingSystem {
                 return rating;
             }
         }
-        return null;
+        return null;  // Если рейтинг для книги не найден
     }
 
     // Метод для отображения всех рейтингов

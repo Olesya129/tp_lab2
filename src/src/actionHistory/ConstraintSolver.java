@@ -1,6 +1,6 @@
 package actionHistory;
 
-// Originator: управляет состоянием и создает Memento
+// управляет состоянием и создает Memento
 public class ConstraintSolver {
     private String currentState;
 

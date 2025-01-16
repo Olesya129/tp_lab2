@@ -3,6 +3,12 @@ package user;
 import notification.Observer;
 
 public abstract class User implements Observer {
+
+    private String name;
+    public String getName() {
+        return name;
+    }
+
     // Шаблонный метод, который использует абстрактные методы
     public void printUserPermissions() {
         System.out.println("Максимальное количество книг: " + getNumberBooks());
